@@ -30,7 +30,6 @@ This is the official Komodo sourcecode repository based on https://github.com/jl
 - API references & Dev Documentation: [https://developers.komodoplatform.com](https://developers.komodoplatform.com/)
 - Blog: [https://blog.komodoplatform.com](https://blog.komodoplatform.com/)
 - Whitepaper: [Komodo Whitepaper](https://komodoplatform.com/whitepaper)
-- Komodo Platform public material: [Komodo Platform public material](https://docs.google.com/document/d/1AbhWrtagu4vYdkl-vsWz-HSNyNvK-W-ZasHCqe7CZy0)
 
 ## List of Komodo Platform Technologies
 
@@ -43,7 +42,6 @@ This is the official Komodo sourcecode repository based on https://github.com/jl
 - Assetchains - Create your own Blockchain that inherits all Komodo Platform functionalities and blockchain interoperability  
 - Pegged Assets - Chains that maintain a peg to fiat currencies  
 - Peerchains - Scalability solution where sibling chains form a network of blockchains  
-- More in depth covered [here](https://docs.google.com/document/d/1AbhWrtagu4vYdkl-vsWz-HSNyNvK-W-ZasHCqe7CZy0)  
 - Also note you receive **0.01%** (since [KIP-0001](https://github.com/KomodoPlatform/kips/blob/main/kips/kip-0001.mediawiki) active) Active User Reward on your balance.
 [See this post for more details](https://forum.komodoplatform.com/t/komodo-active-user-reward-all-you-need-to-know/435)
 
