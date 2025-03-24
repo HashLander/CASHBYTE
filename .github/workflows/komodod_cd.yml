@@ -226,7 +226,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-            asset_path: komodo-linux/komodo-linux.zip
+            asset_path: ./komodo-linux.zip
             asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux.zip
             asset_content_type: application/zip
         - name: Upload OSX Release Asset
@@ -236,7 +236,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-            asset_path: komodo-osx/komodo-osx.zip
+            asset_path: ./komodo-osx.zip
             asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx.zip
             asset_content_type: application/zip
         - name: Upload Windows Release Asset
@@ -246,6 +246,6 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-            asset_path: komodo-win/komodo-win.zip
+            asset_path: ./komodo-win.zip
             asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_win.zip
             asset_content_type: application/zip
