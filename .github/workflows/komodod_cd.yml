@@ -16,21 +16,21 @@ jobs:
   linux-build:
     name: Linux Build
     # using there as old release as possible with GHA worker to provide better compatibility
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
 
       - name: Extract branch name
         shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Shortify commit sha
         shell: bash
-        run: echo "##[set-output name=sha_short;]$(echo ${GITHUB_SHA::7})"
+        run: echo "sha_short=$(echo ${GITHUB_SHA::7})" >> $GITHUB_OUTPUT
         id: shortify_commit
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install deps (Linux)
         env:
@@ -55,7 +55,7 @@ jobs:
           ./zcutil/build.sh -j$(nproc)
           zip --junk-paths komodo-linux src/komodod src/komodo-cli
       - name: Upload komodo-linux.zip as artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: komodo-linux
           path: ./komodo-linux.zip
@@ -112,7 +112,7 @@ jobs:
           zip --junk-paths komodo-osx src/komodod src/komodo-cli
 
       - name: Upload komodo-osx.zip as artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: komodo-osx
           path: ./komodo-osx.zip
@@ -120,23 +120,47 @@ jobs:
   windows-build:
     name: Windows Build (mingw)
     if: ${{ github.event_name != 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install deps (Windows)
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt-get update  # prevents repo404 errors on apt-remove below
-          sudo apt-get remove php* msodbcsql17 mysql* powershell containernetworking-* containers* dotn*
           sudo apt-get update
-          sudo apt-get upgrade -y
-          sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool \
-                               libncurses-dev unzip wget bsdmainutils automake libboost-all-dev libssl-dev \
-                               libprotobuf-dev protobuf-compiler libqrencode-dev libdb++-dev ntp ntpdate nano \
-                               software-properties-common curl libevent-dev libcurl4-gnutls-dev cmake clang \
-                               libsodium-dev ncurses-dev git python3 python3-zmq zlib1g-dev mingw-w64 -y
+          sudo apt-get install build-essential \
+                             pkg-config \
+                             libc6-dev \
+                             m4 \
+                             g++-multilib \
+                             autoconf libtool \
+                             libncurses-dev \
+                             unzip  \
+                             git \
+                             python3 \
+                             zlib1g-dev \
+                             wget \
+                             bsdmainutils \
+                             automake \
+                             libboost-all-dev \
+                             libssl-dev \
+                             libprotobuf-dev \
+                             protobuf-compiler \
+                             libqrencode-dev \
+                             libdb++-dev \
+                             ntp \
+                             ntpdate \
+                             nano \
+                             software-properties-common \
+                             curl \
+                             libevent-dev \
+                             libcurl4-gnutls-dev \
+                             cmake \
+                             clang \
+                             libsodium-dev \
+                             python3-zmq \
+                             mingw-w64 -y
           curl https://sh.rustup.rs -sSf | sh -s -- -y
           source $HOME/.cargo/env
           rustup target add x86_64-pc-windows-gnu
@@ -147,7 +171,7 @@ jobs:
           ./zcutil/build-win.sh -j$(nproc)
           zip --junk-paths komodo-win src/komodod.exe src/komodo-cli.exe
       - name: Upload komodo-win.zip as artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: komodo-win
           path: ./komodo-win.zip      
@@ -155,31 +179,35 @@ jobs:
   publish-release:
       name: Publishing CD releases
       if: ${{ github.event_name != 'workflow_dispatch' }}
-      runs-on: ubuntu-20.04
+      runs-on: ubuntu-22.04
       needs: [linux-build, osx-build, windows-build]
       steps:
         - name: Download komodo-linux.zip
-          uses: actions/download-artifact@v1
+          uses: actions/download-artifact@v4
           with:
             name: komodo-linux  
         - name: Download komodo-osx.zip
-          uses: actions/download-artifact@v1
+          uses: actions/download-artifact@v4
           with:
             name: komodo-osx
         - name: Download komodo-win.zip
-          uses: actions/download-artifact@v1
+          uses: actions/download-artifact@v4
           with:
             name: komodo-win
 
         - name: Extract branch name
           shell: bash
-          run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
           id: extract_branch
 
         - name: Shortify commit sha
           shell: bash
-          run: echo "##[set-output name=sha_short;]$(echo ${GITHUB_SHA::7})"
+          run: echo "sha_short=$(echo ${GITHUB_SHA::7})" >> $GITHUB_OUTPUT
           id: shortify_commit
+
+        - name: Display structure of downloaded files
+          shell: bash
+          run: ls -R
 
         - name: Create Release
           id: create_release
@@ -198,7 +226,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-            asset_path: komodo-linux/komodo-linux.zip
+            asset_path: ./komodo-linux.zip
             asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_linux.zip
             asset_content_type: application/zip
         - name: Upload OSX Release Asset
@@ -208,7 +236,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-            asset_path: komodo-osx/komodo-osx.zip
+            asset_path: ./komodo-osx.zip
             asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_osx.zip
             asset_content_type: application/zip
         - name: Upload Windows Release Asset
@@ -218,6 +246,6 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-            asset_path: komodo-win/komodo-win.zip
+            asset_path: ./komodo-win.zip
             asset_name: komodo_${{ steps.shortify_commit.outputs.sha_short }}_${{ steps.extract_branch.outputs.branch }}_win.zip
             asset_content_type: application/zip
