@@ -17,7 +17,6 @@ This model makes 51% attacks economically and practically unfeasible. All coinba
 - **Decimals:** 8 (Bitcoin-compatible)  
 - **Token Support:** Fungible and Non-Fungible Tokens (NFTs)
 
-## Motto
 
 
 ## Official Website
