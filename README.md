@@ -19,7 +19,6 @@ This model makes 51% attacks economically and practically unfeasible. All coinba
 
 ## Motto
 
-**BUILD. BUILD. BREATHE. BUILD MORE.**
 
 ## Official Website
 https://cashbyte.cash
